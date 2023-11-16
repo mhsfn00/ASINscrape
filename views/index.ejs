@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASIN Scrape</title>
+    <script>
+        var productList = null;
+
+        async function getProducts() {
+            loading();
+            let keyword = document.getElementById('Keyword').value;
+            let asin = document.getElementById('ASIN').value;
+
+            var AJAXRequest = new XMLHttpRequest();
+            let url = `http://localhost:5000/api/scrape?keyword=${keyword}`;
+
+            AJAXRequest.open('GET', url, true);
+
+            AJAXRequest.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("Request is finished and response is ready");
+                    productList = JSON.parse(this.response);
+                    showProduct(asin);
+                } else {
+                    console.log("readyState:", this.readyState, "status:", this.status);
+                }
+            }
+
+            AJAXRequest.send();
+        }
+
+        function loading() {
+            document.getElementById('RetrievedProduct').innerHTML = `
+                <h1>LOADING</h1>
+            `
+        }
+
+        function analyzeInput(e) {
+            if(e.key === 'Enter') getProducts();
+        }
+
+        function showProduct(asin) {
+            console.log(asin);
+            let productContainer = document.getElementById('RetrievedProduct');
+            let matchedProduct = null;
+
+            productList.forEach(product => {
+                if (product.itemASIN == asin) {
+                    matchedProduct = product;
+                }
+            });
+
+            if (matchedProduct == null) {
+                productContainer.innerHTML = `
+                    <p>No product matches the given ASIN</p>
+                `
+            } else {
+                productContainer.innerHTML = `
+                    <p>product index: ${matchedProduct.itemIndex}</p>
+                    <p>page: ${matchedProduct.pageNumber}</p>
+                    <p>ASIN: ${matchedProduct.itemASIN}</p>
+                `
+            }
+            // search word: bottle
+            // page 3, element 6, asin B08JVFXH7C
+            // page 3, element 0?, asin B0CG5R28BS
+            // Results prioritize items that don't have the "sponsored" tag
+
+            // product 61 is the 1st of 2nd page
+            // 600 / 2 
+        } 
+    </script>
+</head>
+<body>
+    <input id="Keyword" placeholder="Enter a product to be searched" />
+    <input id="ASIN" placeholder="Amazon Standard Identification Number" />
+    <button onclick="getProducts();">Scrape</button>
+    <div id="RetrievedProduct">
+
+    </div>
+</body>
+</html>
