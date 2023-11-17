@@ -42,7 +42,6 @@ async function scrape (keyword) {
             console.log(err);
             return (JSON.stringify(err));
         });
-        console.log("finished", page);
     }
 }
 
