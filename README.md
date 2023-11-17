@@ -11,3 +11,7 @@ To run this aplication you need to:
         npm install express
 
         npm install nodemon --save-dev (to make it easier to test things)
+
+    4. Run with the command:
+        
+        npm run dev     (Default page is localhost:5000)
